@@ -4,7 +4,7 @@ from haystack import site
 from haystack.management.commands import update_index
 
 from celery.task import Task, PeriodicTask
-from celery.task.schedules import crontab
+from celery.schedules import crontab
 
 class SearchIndexUpdateTask(Task):
     name = "search.index.update"
