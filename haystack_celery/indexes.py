@@ -20,25 +20,19 @@ class QueuedSearchIndex(indexes.SearchIndex):
     """
     # We override the built-in _setup_* methods to connect the enqueuing operation.
     def _setup_save(self, model):
-        print "========================SETUP"
         signals.post_save.connect(self.enqueue_save, sender=model)
 
     def _setup_delete(self, model):
         signals.post_delete.connect(self.enqueue_delete, sender=model)
 
     def _teardown_save(self, model):
-        print  "========================TEAR"
         signals.post_save.disconnect(self.enqueue_save, sender=model)
 
     def _teardown_delete(self, model):
         signals.post_delete.disconnect(self.enqueue_delete, sender=model)
 
     def enqueue_save(self, instance, **kwargs):
-        print "=================", instance
-        import ipdb as pdb; pdb.set_trace();
-        from tasks import SearchIndexUpdateTask; SearchIndexUpdateTask.delay('profiles', 'taxexpert', instance._get_pk_val())
-        #import ipdb as pdb; pdb.set_trace();
-        #SearchIndexUpdateTask.delay(instance._meta.app_label, instance._meta.module_name, instance._get_pk_val())
+        SearchIndexUpdateTask.delay(instance._meta.app_label, instance._meta.module_name, instance._get_pk_val())
 
     def enqueue_delete(self, instance, **kwargs):
         remove_instance_from_index(instance)
