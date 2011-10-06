@@ -1,7 +1,7 @@
 import logging
 
-from celery.task import Task, PeriodicTask
 from celery.schedules import crontab
+from celery.task import Task, PeriodicTask
 from django.db.models.loading import get_model
 from haystack import site
 from haystack.management.commands import update_index
