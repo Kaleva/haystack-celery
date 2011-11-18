@@ -1,5 +1,6 @@
 from django.db.models import signals
 from django.db.models.loading import get_model
+from haystack import connections as haystack_connections
 from haystack import indexes
 
 from tasks import SearchIndexUpdateTask
