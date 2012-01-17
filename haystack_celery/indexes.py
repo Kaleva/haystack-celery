@@ -1,3 +1,5 @@
+import logging
+
 from django.db.models import signals
 from django.db.models.loading import get_model
 from haystack import connections as haystack_connections
@@ -32,8 +34,11 @@ class QueuedSearchIndex(indexes.SearchIndex):
         signals.post_delete.disconnect(self.enqueue_delete, sender=self.get_model())
 
     def enqueue_save(self, instance, **kwargs):
-        SearchIndexUpdateTask.delay(instance._meta.app_label, instance._meta.module_name, instance._get_pk_val())
+        try:
+            SearchIndexUpdateTask.delay(instance._meta.app_label, instance._meta.module_name, instance._get_pk_val())
+        except Exception, error:
+            logging.error("Could not add index update task to celery. The message queue might be down?")
 
     def enqueue_delete(self, instance, **kwargs):
         remove_instance_from_index(instance)
-    
+
